@@ -1,26 +1,28 @@
-from surprise import Dataset, Reader
-from surprise.model_selection import train_test_split
-from surprise import SVD
-from surprise import accuracy
 
-# Load and preprocess the data
-reader = Reader(line_format='user item rating', sep=',')
-data = Dataset.load_from_file('movie_ratings.csv', reader=reader)
+movies = {
+    "Movie 1": ["Genre 1", "Genre 2"],
+    "Movie 2": ["Genre 2", "Genre 3"],
+    # Add more movies and genres
+}
+user_ratings = {
+    "User 1": {"Movie 1": 5, "Movie 2": 3},
+    "User 2": {"Movie 1": 4, "Movie 2": 2},
+    # Add more user ratings
+}
 
-# Split the data into a training set and a testing set
-trainset, testset = train_test_split(data, test_size=0.2, random_state=42)
+def recommend_movies(user, movies, user_ratings):
+    recommendations = {}
+    for movie in movies:
+        if movie not in user_ratings[user]:
+            similarity_score = calculate_similarity(user, movie, movies, user_ratings)
+            recommendations[movie] = similarity_score
+    sorted_recommendations = sorted(recommendations.items(), key=lambda x: x[1], reverse=True)
+    return sorted_recommendations
 
-# Choose and train a collaborative filtering algorithm (SVD)
-model = SVD()
-model.fit(trainset)
+def calculate_similarity(user, movie, movies, user_ratings):
+    # Implement your similarity calculation logic here
+    pass
 
-# Make predictions on the test set
-predictions = model.test(testset)
-
-# Evaluate the model
-accuracy.rmse(predictions)
-
-# Generate movie recommendations for a specific user
-user_id = "123"
-user_items = data.build_full_trainset().ur[user_id]
-user_recs = model.test(user_items)
+user = "User 1"
+movie_recommendations = recommend_movies(user, movies, user_ratings)
+print(movie_recommendations)
