@@ -1,0 +1,26 @@
+from surprise import Dataset, Reader
+from surprise.model_selection import train_test_split
+from surprise import SVD
+from surprise import accuracy
+
+# Load and preprocess the data
+reader = Reader(line_format='user item rating', sep=',')
+data = Dataset.load_from_file('movie_ratings.csv', reader=reader)
+
+# Split the data into a training set and a testing set
+trainset, testset = train_test_split(data, test_size=0.2, random_state=42)
+
+# Choose and train a collaborative filtering algorithm (SVD)
+model = SVD()
+model.fit(trainset)
+
+# Make predictions on the test set
+predictions = model.test(testset)
+
+# Evaluate the model
+accuracy.rmse(predictions)
+
+# Generate movie recommendations for a specific user
+user_id = "123"
+user_items = data.build_full_trainset().ur[user_id]
+user_recs = model.test(user_items)
